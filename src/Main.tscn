@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://big-rock.dae" type="PackedScene" id=1]
 [ext_resource path="res://medium-rock.dae" type="PackedScene" id=2]
 [ext_resource path="res://small-rock.dae" type="PackedScene" id=3]
+
+[sub_resource type="PlaneMesh" id=1]
+size = Vector2( 8, 8 )
+subdivide_width = 10
+subdivide_depth = 10
 
 [node name="Main" type="Spatial"]
 
@@ -13,5 +18,10 @@
 [node name="Small Rock" parent="." instance=ExtResource( 3 )]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.87767, 0.479266, 0, -0.479266, 0.87767, 2.07501, 3.08953, 3.96729 )
+transform = Transform( 1, 0, 0, 0, 0.67694, 0.736038, 0, -0.736038, 0.67694, 2.07501, 4.26237, 4.67465 )
+
+[node name="Ocean" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.284828, 0 )
+mesh = SubResource( 1 )
+material/0 = null
 
