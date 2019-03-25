@@ -1,13 +1,102 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://big-rock.dae" type="PackedScene" id=1]
 [ext_resource path="res://medium-rock.dae" type="PackedScene" id=2]
 [ext_resource path="res://small-rock.dae" type="PackedScene" id=3]
+[ext_resource path="res://ocean-normal.jpg" type="Texture" id=4]
+[ext_resource path="res://checkerboard.png" type="Texture" id=5]
 
-[sub_resource type="PlaneMesh" id=1]
-size = Vector2( 8, 8 )
-subdivide_width = 10
-subdivide_depth = 10
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+
+void fragment() {
+	float depth = texture(DEPTH_TEXTURE, SCREEN_UV).r;
+	depth = depth * 2.0 - 1.0;
+	depth = PROJECTION_MATRIX[3][2] / (depth + PROJECTION_MATRIX[2][2]);
+	depth = depth + VERTEX.z;
+	if(depth < 0.4) {
+		ALBEDO = vec3((1.0 / depth) / 10.0);
+	} else {
+		ALBEDO = vec3(0.2);
+	} 
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+
+[sub_resource type="PlaneMesh" id=3]
+material = SubResource( 2 )
+size = Vector2( 40, 40 )
+subdivide_width = 200
+subdivide_depth = 200
+
+[sub_resource type="Shader" id=4]
+code = "shader_type spatial;
+render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
+uniform vec4 albedo : hint_color;
+uniform sampler2D texture_albedo : hint_albedo;
+uniform float specular;
+uniform float metallic;
+uniform float roughness : hint_range(0,1);
+uniform float point_size : hint_range(0,128);
+uniform sampler2D texture_metallic : hint_white;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_white;
+uniform vec4 roughness_texture_channel;
+uniform sampler2D texture_normal : hint_normal;
+uniform float normal_scale : hint_range(-16,16);
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+
+void vertex() {
+	UV=UV*uv1_scale.xy+uv1_offset.xy;
+}
+
+
+
+
+void fragment() {
+	vec2 base_uv = UV;
+	vec4 albedo_tex = texture(texture_albedo,base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	float metallic_tex = dot(texture(texture_metallic,base_uv),metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	float roughness_tex = dot(texture(texture_roughness,base_uv),roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+	SPECULAR = specular;
+	NORMALMAP = texture(texture_normal,base_uv).rgb;
+	NORMALMAP_DEPTH = normal_scale;
+}
+"
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
+shader_param/albedo = Color( 1, 1, 1, 1 )
+shader_param/specular = 0.5
+shader_param/metallic = 0.0
+shader_param/roughness = 1.0
+shader_param/point_size = 1.0
+shader_param/metallic_texture_channel = Plane( 1, 0, 0, 0 )
+shader_param/roughness_texture_channel = Plane( 1, 0, 0, 0 )
+shader_param/normal_scale = 4.368
+shader_param/uv1_scale = Vector3( 1, 1, 1 )
+shader_param/uv1_offset = Vector3( 0, 0, 0 )
+shader_param/uv2_scale = Vector3( 1, 1, 1 )
+shader_param/uv2_offset = Vector3( 0, 0, 0 )
+shader_param/texture_normal = ExtResource( 4 )
+
+[sub_resource type="CubeMesh" id=6]
+material = SubResource( 5 )
+
+[sub_resource type="SpatialMaterial" id=7]
+albedo_texture = ExtResource( 5 )
+
+[sub_resource type="PlaneMesh" id=8]
+material = SubResource( 7 )
+size = Vector2( 80, 80 )
 
 [node name="Main" type="Spatial"]
 
@@ -18,10 +107,30 @@ subdivide_depth = 10
 [node name="Small Rock" parent="." instance=ExtResource( 3 )]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.67694, 0.736038, 0, -0.736038, 0.67694, 2.07501, 4.26237, 4.67465 )
+transform = Transform( 1, 0, 0, 0, 0.67694, 0.736038, 0, -0.736038, 0.67694, 2.07501, 9.07569, 10.8901 )
 
 [node name="Ocean" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.284828, 0 )
-mesh = SubResource( 1 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.0753112, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.978582, 0.205856, 0, -0.205856, 0.978582, 0, 2.63633, 6.35308 )
+light_energy = 0.3
+shadow_contact = 1.0
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -13.345, 0, 0 )
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="CheckeredFloor" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.21407, 0 )
+mesh = SubResource( 8 )
+material/0 = null
+
+[node name="CheckeredWall" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.126976, -0.991906, 0, 0.991906, 0.126976, 0, -4.21407, -10.6304 )
+mesh = SubResource( 8 )
 material/0 = null
 
