@@ -9,20 +9,54 @@
 [sub_resource type="Shader" id=1]
 code = "shader_type spatial;
 
+uniform vec2 amplitude = vec2(0.2, 0.1);
+uniform vec2 frequency = vec2(3.0, 2.5);
+uniform vec2 time_factor = vec2(2.0, 3.0);
+
+uniform sampler2D texture_normal : hint_normal;
+uniform float normal_scale = 0.1;
+uniform vec4 color : hint_color;
+uniform float wave_height = 0.3;
+
+float height(vec2 pos, float time) {
+	return (amplitude.x * sin(pos.x * frequency.x + time * time_factor.x)) + (amplitude.y * sin(pos.y * frequency.y + time * time_factor.y));
+}
+
+void vertex() {
+	VERTEX.y += height(VERTEX.xz, TIME); // sample the height at the location of our vertex
+	TANGENT = normalize(vec3(0.0, height(VERTEX.xz + vec2(0.0, 0.2), TIME) - height(VERTEX.xz + vec2(0.0, -0.2), TIME), 0.4));
+	BINORMAL = normalize(vec3(0.4, height(VERTEX.xz + vec2(0.2, 0.0), TIME) - height(VERTEX.xz + vec2(-0.2, 0.0), TIME ), 0.0));
+	NORMAL = cross(TANGENT, BINORMAL);
+}
+
 void fragment() {
+	// normal map
+	NORMALMAP = texture(texture_normal,UV).rgb;
+	NORMALMAP_DEPTH = normal_scale;
+
+	// foam shading with depth buffer
 	float depth = texture(DEPTH_TEXTURE, SCREEN_UV).r;
 	depth = depth * 2.0 - 1.0;
 	depth = PROJECTION_MATRIX[3][2] / (depth + PROJECTION_MATRIX[2][2]);
 	depth = depth + VERTEX.z;
+	// set albedo based on depth, show foam if shallow
 	if(depth < 0.4) {
 		ALBEDO = vec3((1.0 / depth) / 10.0);
 	} else {
-		ALBEDO = vec3(0.2);
+		ALBEDO = color.rgb;
 	} 
+	ALPHA = color.a;
 }"
 
 [sub_resource type="ShaderMaterial" id=2]
 shader = SubResource( 1 )
+shader_param/amplitude = Vector2( 0.2, 0.1 )
+shader_param/frequency = Vector2( 3, 2.5 )
+shader_param/time_factor = Vector2( 2, 3 )
+shader_param/normal_scale = 0.77
+shader_param/color = Color( 0.380392, 0.666667, 0.854902, 0.901961 )
+shader_param/wave_height = 0.3
+shader_param/texture_normal = ExtResource( 4 )
 
 [sub_resource type="PlaneMesh" id=3]
 material = SubResource( 2 )
@@ -115,7 +149,7 @@ mesh = SubResource( 3 )
 material/0 = null
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.978582, 0.205856, 0, -0.205856, 0.978582, 0, 2.63633, 6.35308 )
+transform = Transform( 1, 0, 0, 0, 0.416124, 0.909308, 0, -0.909308, 0.416124, 0, 5.77939, 15.1763 )
 light_energy = 0.3
 shadow_contact = 1.0
 
