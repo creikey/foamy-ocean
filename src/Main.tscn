@@ -18,6 +18,8 @@ uniform vec4 wave_3 = vec4(0.8, 4.0, 0.8, 9.0);
 uniform float noise_zoom = 0.5;
 uniform float noise_amp = 7.0;
 
+uniform vec4 color: hint_color;
+
 uniform float PI = 3.14159;
 
 float hash(vec2 p) {
@@ -66,22 +68,29 @@ vec3 wave(vec2 pos, float time) {
 }
 
 void vertex() {
-	vec3 wave_result = wave(VERTEX.xz, TIME);
+	float time = TIME / 2.0;
+	vec3 wave_result = wave(VERTEX.xz, time);
 	VERTEX.y += wave_result.y;
 	VERTEX.x += wave_result.x;
 	VERTEX.z += wave_result.z;
-	TANGENT = normalize(vec3(0.0, wave(VERTEX.xz + vec2(0.0, 0.2), TIME).y - wave(VERTEX.xz + vec2(0.0, -0.2), TIME).y, 0.4));
-	BINORMAL = normalize(vec3(0.4, wave(VERTEX.xz + vec2(0.2, 0.0), TIME).y - wave(VERTEX.xz + vec2(-0.2, 0.0), TIME ).y, 0.0));
+	TANGENT = normalize(vec3(0.0, wave(VERTEX.xz + vec2(0.0, 0.2), time).y - wave(VERTEX.xz + vec2(0.0, -0.2), time).y, 0.4));
+	BINORMAL = normalize(vec3(0.4, wave(VERTEX.xz + vec2(0.2, 0.0), time).y - wave(VERTEX.xz + vec2(-0.2, 0.0), time ).y, 0.0));
 	NORMAL = cross(TANGENT, BINORMAL);
+}
+
+void fragment() {
+	ALBEDO = color.rgb;
+	ALPHA = color.a;
 }"
 
 [sub_resource type="ShaderMaterial" id=2]
 shader = SubResource( 1 )
-shader_param/wave_1 = Plane( 1, 0.34, 0.46, 19.36 )
+shader_param/wave_1 = Plane( 0.17, 0.32, 0.26, 19.36 )
 shader_param/wave_2 = Plane( 0.5, 0.4, 0.34, 12 )
 shader_param/wave_3 = Plane( 0.8, 4, 0.24, 9 )
 shader_param/noise_zoom = 0.15
-shader_param/noise_amp = 12.81
+shader_param/noise_amp = 6.47
+shader_param/color = Color( 0.584314, 0.729412, 0.776471, 1 )
 shader_param/PI = 3.14159
 
 [sub_resource type="PlaneMesh" id=3]
@@ -162,13 +171,13 @@ size = Vector2( 80, 80 )
 environment = ExtResource( 1 )
 
 [node name="Big Rock" parent="." instance=ExtResource( 2 )]
-visible = false
+transform = Transform( 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0 )
 
 [node name="Medium Rock" parent="." instance=ExtResource( 3 )]
-visible = false
+transform = Transform( 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0 )
 
 [node name="Small Rock" parent="." instance=ExtResource( 4 )]
-visible = false
+transform = Transform( 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0 )
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.441869, 0.89708, 0, -0.89708, 0.441869, 2.07501, 116.45, 86.6238 )
