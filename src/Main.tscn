@@ -96,12 +96,12 @@ void fragment() {
 
 [sub_resource type="ShaderMaterial" id=2]
 shader = SubResource( 1 )
-shader_param/wave_1 = Plane( 0.17, 0.32, 0.26, 19.36 )
-shader_param/wave_2 = Plane( 0.5, 0.4, 0.34, 12 )
-shader_param/wave_3 = Plane( 0.8, 4, 0.24, 9 )
-shader_param/noise_zoom = 0.15
-shader_param/noise_amp = 6.47
-shader_param/color = Color( 0.643137, 0.74902, 0.792157, 0.901961 )
+shader_param/wave_1 = Plane( 0.17, 0.29, 0.3, 25.1 )
+shader_param/wave_2 = Plane( 0.5, 0.4, 0.21, 12 )
+shader_param/wave_3 = Plane( 0.8, 4, 0.22, 9 )
+shader_param/noise_zoom = 0.11
+shader_param/noise_amp = 15.84
+shader_param/color = Color( 0.572549, 0.709804, 0.764706, 0.964706 )
 shader_param/refraction = 0.03
 shader_param/metallic = 0.37
 shader_param/roughness = 0.3
@@ -207,6 +207,7 @@ script = ExtResource( 5 )
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.933049, 0.245852, 0.262635, -0.328932, 0.878658, 0.346069, -0.145685, -0.409288, 0.900699, 0, 17.1143, 15.1763 )
 light_energy = 0.3
+shadow_enabled = true
 shadow_contact = 1.0
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
