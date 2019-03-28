@@ -4,132 +4,26 @@
 [ext_resource path="res://big-rock.dae" type="PackedScene" id=2]
 [ext_resource path="res://medium-rock.dae" type="PackedScene" id=3]
 [ext_resource path="res://small-rock.dae" type="PackedScene" id=4]
-[ext_resource path="res://water-foam-texture.png" type="Texture" id=5]
-[ext_resource path="res://Ocean.gd" type="Script" id=6]
-[ext_resource path="res://checkerboard.png" type="Texture" id=7]
-
-[sub_resource type="Shader" id=1]
-code = "shader_type spatial;
-
-// direction.x, direction.y, steepness, wavelength
-uniform vec4 wave_1 = vec4(0.14, 0.29, 0.25, 18.93);
-uniform vec4 wave_2 = vec4(0.3, 0.35, 0.28, 12.0);
-uniform vec4 wave_3 = vec4(0.8, 3.18, 0.22, 9.0);
-
-uniform float noise_zoom = 0.22;
-uniform float noise_amp = 9.59;
-
-uniform vec4 color: hint_color;
-uniform float foam_level = 5.64;
-uniform sampler2D foam_texture;
-uniform float foam_scale = 114.32;
-uniform float foam_height = 6.61;
-//uniform float refraction = 0.05;
-uniform float metallic = 0.59;
-uniform float roughness = 0;
-
-uniform float PI = 3.14159;
-
-float hash(vec2 p) {
-  return fract(sin(dot(p * 17.17, vec2(14.91, 67.31))) * 4791.9511);
-}
-
-float noise(vec2 x) {
-  vec2 p = floor(x);
-  vec2 f = fract(x);
-  f = f * f * (3.0 - 2.0 * f);
-  vec2 a = vec2(1.0, 0.0);
-  return mix(mix(hash(p + a.yy), hash(p + a.xy), f.x),
-         mix(hash(p + a.yx), hash(p + a.xx), f.x), f.y);
-}
-
-float fbm(vec2 x) {
-  float height = 0.0;
-  float amplitude = 0.5;
-  float frequency = 3.0;
-  for (int i = 0; i < 6; i++){
-    height += noise(x * frequency) * amplitude;
-    amplitude *= 0.5;
-    frequency *= 2.0;
-  }
-  return height;
-}
-
-vec3 gernster_wave(vec4 params, vec2 pos, float time) {
-	float steepness = params.z;
-	float wavelength = params.w;
-	float k = 2.0 * PI / wavelength;
-	float c = sqrt(9.81 / k);
-	vec2 d = normalize(params.xy);
-	float f = k * (dot(d, pos.xy) - c * time);
-	float a = steepness / k;
-	return vec3(d.x * (a * cos(f)), a * sin(f), d.y * (a * cos(f)));
-}
-
-vec3 wave(vec2 pos, float time) {
-	vec3 to_return = vec3(0.0);
-	to_return += gernster_wave(wave_1, pos, time);
-	to_return += gernster_wave(wave_2, pos, time);
-	to_return += gernster_wave(wave_3, pos, time);
-	to_return.y += fbm(pos.xy * (noise_zoom/10.0)) * noise_amp;
-	return to_return;
-}
-
-varying float height;
-
-void vertex() {
-	float time = TIME / 1.5;
-	vec3 wave_result = wave(VERTEX.xz, time);
-	VERTEX.y += wave_result.y;
-	height = wave_result.y;
-	VERTEX.x += wave_result.x;
-	VERTEX.z += wave_result.z;
-	TANGENT = normalize(vec3(0.0, wave(VERTEX.xz + vec2(0.0, 0.2), time).y - wave(VERTEX.xz + vec2(0.0, -0.2), time).y, 0.4));
-	BINORMAL = normalize(vec3(0.4, wave(VERTEX.xz + vec2(0.2, 0.0), time).y - wave(VERTEX.xz + vec2(-0.2, 0.0), time ).y, 0.0));
-	NORMAL = cross(TANGENT, BINORMAL);
-}
-
-void fragment() {
-	// calculate depth for foam
-	float depth = texture(DEPTH_TEXTURE, SCREEN_UV).r;
-	depth = depth * 2.0 - 1.0;
-	depth = PROJECTION_MATRIX[3][2] / (depth + PROJECTION_MATRIX[2][2]);
-	depth = depth + VERTEX.z;
-	// calculate foam mask stuff
-	float foam_scroll = TIME/4.0;
-	vec2 scaled_uv = UV * foam_scale; 
-	float channelA = texture(foam_texture, scaled_uv - vec2(foam_scroll, cos(UV.x))).r; 
-	float channelB = texture(foam_texture, scaled_uv * 0.5 + vec2(sin(UV.y), foam_scroll)).b;
-	float mask = (channelA + channelB) * 0.95;
-	mask = pow(mask, 2);
-	mask = clamp(mask, 0, 1);
-	ALBEDO = color.rgb * ((height + 3.0) / 5.0);
-	if(height > foam_height) {
-		EMISSION = vec3(1.0 - mask) * pow(height - foam_height, 1.0);
-	}
-	if(depth < foam_level) {
-		EMISSION = vec3(1.0 - mask) * pow((foam_level - depth)/foam_level, 2.0);
-	}
-	ALPHA = color.a;
-	METALLIC = metallic;
-	ROUGHNESS = roughness;
-}"
+[ext_resource path="res://ocean.shader" type="Shader" id=5]
+[ext_resource path="res://water-foam-texture.png" type="Texture" id=6]
+[ext_resource path="res://Ocean.gd" type="Script" id=7]
+[ext_resource path="res://checkerboard.png" type="Texture" id=8]
 
 [sub_resource type="ShaderMaterial" id=2]
-shader = SubResource( 1 )
+shader = ExtResource( 5 )
 shader_param/wave_1 = Plane( 0.14, 0.29, 0.25, 18.93 )
 shader_param/wave_2 = Plane( 0.3, 0.35, 0.28, 12 )
 shader_param/wave_3 = Plane( 0.8, 3.18, 0.22, 9 )
 shader_param/noise_zoom = 0.22
 shader_param/noise_amp = 9.59
-shader_param/color = Color( 0.341176, 0.533333, 0.662745, 1 )
+shader_param/color = Color( 0.329412, 0.439216, 0.513726, 1 )
 shader_param/foam_level = 5.64
 shader_param/foam_scale = 114.32
 shader_param/foam_height = 6.61
 shader_param/metallic = 0.59
 shader_param/roughness = 0.0
 shader_param/PI = 3.14159
-shader_param/foam_texture = ExtResource( 5 )
+shader_param/foam_texture = ExtResource( 6 )
 
 [sub_resource type="PlaneMesh" id=3]
 material = SubResource( 2 )
@@ -195,7 +89,7 @@ material = SubResource( 5 )
 size = Vector3( 34.31, 12.66, 12.22 )
 
 [sub_resource type="SpatialMaterial" id=7]
-albedo_texture = ExtResource( 7 )
+albedo_texture = ExtResource( 8 )
 
 [sub_resource type="PlaneMesh" id=8]
 material = SubResource( 7 )
@@ -222,7 +116,7 @@ far = 1258.2
 transform = Transform( 1, 0, 0, 0, 0.88, 0, 0, 0, 1, 4.92238, 0.567398, -2.67294 )
 mesh = SubResource( 3 )
 material/0 = null
-script = ExtResource( 6 )
+script = ExtResource( 7 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.943288, 0.288297, 0.1646, -0.308609, 0.944245, 0.114728, -0.122347, -0.159019, 0.979665, 0, 17.1143, 15.1763 )
