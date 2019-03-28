@@ -12,21 +12,21 @@
 code = "shader_type spatial;
 
 // direction.x, direction.y, steepness, wavelength
-uniform vec4 wave_1 = vec4(1.0, 0.0, 0.5, 10.0);
-uniform vec4 wave_2 = vec4(0.5, 1.0, 0.6, 11.0);
-uniform vec4 wave_3 = vec4(0.8, 4.0, 0.8, 9.0);
+uniform vec4 wave_1 = vec4(0.14, 0.29, 0.25, 18.93);
+uniform vec4 wave_2 = vec4(0.3, 0.35, 0.28, 12.0);
+uniform vec4 wave_3 = vec4(0.8, 3.18, 0.22, 9.0);
 
-uniform float noise_zoom = 0.5;
-uniform float noise_amp = 7.0;
+uniform float noise_zoom = 0.22;
+uniform float noise_amp = 9.59;
 
 uniform vec4 color: hint_color;
-uniform float foam_level = 4.0;
+uniform float foam_level = 5.64;
 uniform sampler2D foam_texture;
-uniform float foam_scale = 1.0;
-uniform float foam_height = 7.12;
+uniform float foam_scale = 114.32;
+uniform float foam_height = 6.61;
 //uniform float refraction = 0.05;
-uniform float metallic = 0.5;
-uniform float roughness = 0.2;
+uniform float metallic = 0.59;
+uniform float roughness = 0;
 
 uniform float PI = 3.14159;
 
@@ -137,7 +137,7 @@ size = Vector2( 500, 500 )
 subdivide_width = 200
 subdivide_depth = 200
 
-[sub_resource type="Shader" id=9]
+[sub_resource type="Shader" id=4]
 code = "shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx,vertex_lighting;
 uniform vec4 albedo : hint_color;
@@ -176,8 +176,8 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id=10]
-shader = SubResource( 9 )
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
 shader_param/albedo = Color( 1, 1, 1, 1 )
 shader_param/specular = 0.5
 shader_param/metallic = 0.0
@@ -191,7 +191,7 @@ shader_param/uv2_scale = Vector3( 1, 1, 1 )
 shader_param/uv2_offset = Vector3( 0, 0, 0 )
 
 [sub_resource type="CubeMesh" id=6]
-material = SubResource( 10 )
+material = SubResource( 5 )
 size = Vector3( 34.31, 12.66, 12.22 )
 
 [sub_resource type="SpatialMaterial" id=7]
