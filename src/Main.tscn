@@ -214,7 +214,7 @@ transform = Transform( 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0 )
 transform = Transform( 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.64135, 0.767248, 0, -0.767248, 0.64135, 2.07501, 81.9756, 74.5024 )
+transform = Transform( 1, 0, 0, 0, 0.691312, 0.722556, 0, -0.722556, 0.691312, 2.07501, 104.063, 138.917 )
 current = true
 far = 1258.2
 
