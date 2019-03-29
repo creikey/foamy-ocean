@@ -8,7 +8,7 @@ uniform vec4 wave_3 = vec4(0.8, 3.18, 0.22, 9.0);
 uniform float noise_zoom = 0.22;
 uniform float noise_amp = 9.59;
 
-uniform vec4 color: hint_color;
+uniform vec4 color: hint_color = vec4(0.3411, 0.5333, 0.6627, 1.0);
 uniform float foam_level = 5.64;
 uniform sampler2D foam_texture;
 uniform float foam_scale = 114.32;

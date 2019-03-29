@@ -9,14 +9,14 @@
 [ext_resource path="res://Ocean.gd" type="Script" id=7]
 [ext_resource path="res://checkerboard.png" type="Texture" id=8]
 
-[sub_resource type="ShaderMaterial" id=2]
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 5 )
 shader_param/wave_1 = Plane( 0.14, 0.29, 0.25, 18.93 )
 shader_param/wave_2 = Plane( 0.3, 0.35, 0.28, 12 )
 shader_param/wave_3 = Plane( 0.8, 3.18, 0.22, 9 )
 shader_param/noise_zoom = 0.22
 shader_param/noise_amp = 9.59
-shader_param/color = Color( 0.329412, 0.439216, 0.513726, 1 )
+shader_param/color = Color( 0.501961, 0.501961, 0.701961, 1 )
 shader_param/foam_level = 5.64
 shader_param/foam_scale = 114.32
 shader_param/foam_height = 6.61
@@ -25,13 +25,13 @@ shader_param/roughness = 0.0
 shader_param/PI = 3.14159
 shader_param/foam_texture = ExtResource( 6 )
 
-[sub_resource type="PlaneMesh" id=3]
-material = SubResource( 2 )
+[sub_resource type="PlaneMesh" id=2]
+material = SubResource( 1 )
 size = Vector2( 500, 500 )
 subdivide_width = 200
 subdivide_depth = 200
 
-[sub_resource type="Shader" id=4]
+[sub_resource type="Shader" id=3]
 code = "shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx,vertex_lighting;
 uniform vec4 albedo : hint_color;
@@ -70,8 +70,8 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id=5]
-shader = SubResource( 4 )
+[sub_resource type="ShaderMaterial" id=4]
+shader = SubResource( 3 )
 shader_param/albedo = Color( 1, 1, 1, 1 )
 shader_param/specular = 0.5
 shader_param/metallic = 0.0
@@ -84,15 +84,15 @@ shader_param/uv1_offset = Vector3( 0, 0, 0 )
 shader_param/uv2_scale = Vector3( 1, 1, 1 )
 shader_param/uv2_offset = Vector3( 0, 0, 0 )
 
-[sub_resource type="CubeMesh" id=6]
-material = SubResource( 5 )
+[sub_resource type="CubeMesh" id=5]
+material = SubResource( 4 )
 size = Vector3( 34.31, 12.66, 12.22 )
 
-[sub_resource type="SpatialMaterial" id=7]
+[sub_resource type="SpatialMaterial" id=6]
 albedo_texture = ExtResource( 8 )
 
-[sub_resource type="PlaneMesh" id=8]
-material = SubResource( 7 )
+[sub_resource type="PlaneMesh" id=7]
+material = SubResource( 6 )
 size = Vector2( 80, 80 )
 
 [node name="Main" type="WorldEnvironment"]
@@ -114,7 +114,7 @@ far = 1258.2
 
 [node name="Ocean" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.88, 0, 0, 0, 1, 4.92238, 0.567398, -2.67294 )
-mesh = SubResource( 3 )
+mesh = SubResource( 2 )
 material/0 = null
 script = ExtResource( 7 )
 
@@ -126,16 +126,16 @@ shadow_contact = 1.0
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -47.2303, 6.31269, 0 )
-mesh = SubResource( 6 )
+mesh = SubResource( 5 )
 material/0 = null
 
 [node name="CheckeredFloor" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.21407, 0 )
-mesh = SubResource( 8 )
+mesh = SubResource( 7 )
 material/0 = null
 
 [node name="CheckeredWall" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.126976, -0.991906, 0, 0.991906, 0.126976, 0, -4.21407, -10.6304 )
-mesh = SubResource( 8 )
+mesh = SubResource( 7 )
 material/0 = null
 
