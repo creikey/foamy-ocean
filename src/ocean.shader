@@ -1,4 +1,5 @@
 shader_type spatial;
+//render_mode diffuse_toon;
 
 // direction.x, direction.y, steepness, wavelength
 uniform vec4 wave_1 = vec4(0.14, 0.29, 0.25, 18.93);
@@ -9,6 +10,7 @@ uniform float noise_zoom = 0.22;
 uniform float noise_amp = 9.59;
 
 uniform vec4 color: hint_color = vec4(0.3411, 0.5333, 0.6627, 1.0);
+uniform float color_mid_height = 3.0;
 uniform float foam_level = 5.64;
 uniform sampler2D foam_texture;
 uniform float foam_scale = 114.32;
@@ -16,6 +18,10 @@ uniform float foam_height = 6.61;
 //uniform float refraction = 0.05;
 uniform float metallic = 0.59;
 uniform float roughness = 0;
+uniform sampler2D texture_normal : hint_normal;
+uniform float normal_scale : hint_range(-16,16);
+uniform float normal_zoom = 1.0;
+uniform float normal_flow_divisor = 350.0;
 
 uniform float PI = 3.14159;
 
@@ -92,7 +98,7 @@ void fragment() {
 	float mask = (channelA + channelB) * 0.95;
 	mask = pow(mask, 2);
 	mask = clamp(mask, 0, 1);
-	ALBEDO = color.rgb * ((height + 3.0) / 5.0);
+	ALBEDO = color.rgb * ((height + color_mid_height) / 5.0);
 	if(height > foam_height) {
 		EMISSION = vec3(1.0 - mask) * pow(height - foam_height, 1.0);
 	}
@@ -102,4 +108,6 @@ void fragment() {
 	ALPHA = color.a;
 	METALLIC = metallic;
 	ROUGHNESS = roughness;
+	NORMALMAP = texture(texture_normal,(UV + TIME/normal_flow_divisor)*normal_zoom).rgb;
+	NORMALMAP_DEPTH = normal_scale;
 }
