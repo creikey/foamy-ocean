@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://ocean.shader" type="Shader" id=1]
+[ext_resource path="res://water-foam-texture.png" type="Texture" id=2]
+[ext_resource path="res://ocean-normal.jpg" type="Texture" id=3]
+[ext_resource path="res://Ocean.gd" type="Script" id=4]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 1 )
+shader_param/wave_1 = Plane( 0.13, 0.1, 0.19, 18.93 )
+shader_param/wave_2 = Plane( 0.3, 0.45, 0.12, 12 )
+shader_param/wave_3 = Plane( 0.8, 1.74, 0.32, 10.39 )
+shader_param/noise_zoom = 0.59
+shader_param/noise_amp = 4.58
+shader_param/color = Color( 0.403922, 0.501961, 0.607843, 1 )
+shader_param/color_mid_height = 3.58
+shader_param/foam_level = 5.64
+shader_param/foam_scale = 114.32
+shader_param/foam_height = 3.27
+shader_param/metallic = 0.13
+shader_param/roughness = 0.16
+shader_param/normal_scale = 0.55
+shader_param/normal_zoom = 6.81
+shader_param/normal_flow_divisor = 314.28
+shader_param/PI = 3.14159
+shader_param/foam_texture = ExtResource( 2 )
+shader_param/texture_normal = ExtResource( 3 )
+
+[sub_resource type="PlaneMesh" id=2]
+material = SubResource( 1 )
+size = Vector2( 500, 500 )
+subdivide_width = 200
+subdivide_depth = 200
+
+[node name="Ocean" type="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 0.88, 0, 0, 0, 1, 4.92238, 0.567398, -2.67294 )
+mesh = SubResource( 2 )
+material/0 = null
+script = ExtResource( 4 )
+
