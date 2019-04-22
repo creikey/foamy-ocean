@@ -5,11 +5,13 @@ shader_type spatial;
 uniform vec4 wave_1 = vec4(0.14, 0.29, 0.25, 18.93);
 uniform vec4 wave_2 = vec4(0.3, 0.35, 0.28, 12.0);
 uniform vec4 wave_3 = vec4(0.8, 3.18, 0.22, 9.0);
+uniform vec4 wave_4 = vec4(0.2, 0.6, 0.36, 24.0);
 
 uniform float noise_zoom = 0.22;
 uniform float noise_amp = 9.59;
 
 uniform vec4 color: hint_color = vec4(0.3411, 0.5333, 0.6627, 1.0);
+uniform float time_factor = 1.5;
 uniform float color_mid_height = 3.0;
 uniform float foam_level = 5.64;
 uniform sampler2D foam_texture;
@@ -66,6 +68,7 @@ vec3 wave(vec2 pos, float time) {
 	to_return += gernster_wave(wave_1, pos, time);
 	to_return += gernster_wave(wave_2, pos, time);
 	to_return += gernster_wave(wave_3, pos, time);
+	to_return += gernster_wave(wave_4, pos, time);
 	to_return.y += fbm(pos.xy * (noise_zoom/10.0)) * noise_amp;
 	return to_return;
 }
@@ -73,7 +76,7 @@ vec3 wave(vec2 pos, float time) {
 varying float height;
 
 void vertex() {
-	float time = TIME / 1.5;
+	float time = TIME / time_factor;
 	vec3 wave_result = wave(VERTEX.xz, time);
 	VERTEX.y += wave_result.y;
 	height = wave_result.y;
